@@ -15,9 +15,13 @@ if (string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(model))
     throw new Exception("Azure OpenAI connection information was not set. See README for details.");
 }
 
+// Set the environment variable to use the "dev" managed identity to use dev tool support for
+// credential chaining, per https://learn.microsoft.com/dotnet/azure/sdk/authentication/credential-chains?tabs=dac#exclude-a-credential-type-category
+Environment.SetEnvironmentVariable(DefaultAzureCredential.DefaultEnvironmentVariableName, "dev");
+
 AzureOpenAIClient azureClient = new(
     new Uri(endpoint),
-    new DefaultAzureCredential());
+    new DefaultAzureCredential(DefaultAzureCredential.DefaultEnvironmentVariableName));
 ChatClient chatClient = azureClient.GetChatClient(model);
 
 ChatCompletion completion = chatClient.CompleteChat(
